@@ -4,4 +4,13 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeAPI.DataAccess\EmployeeAPI.DataAccess.csproj" />
+    <ProjectReference Include="..\EmployeeAPI.Models\EmployeeAPI.Models.csproj" />
+  </ItemGroup>
+
 </Project>
