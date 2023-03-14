@@ -16,21 +16,22 @@ namespace EmployeeAPI.Services.Employees
         private readonly EmployeeDbContext _context = new EmployeeDbContext();
         public Models.Employee AddEmployee(Models.Employee employee)
         {
+            var employeeIdParam = new SqlParameter("@EmployeeId", SqlDbType.Int) { Direction = ParameterDirection.Output };
+            var fullnameParam = new SqlParameter("@Fullname", employee.Fullname);
+            var addressNoParam = new SqlParameter("@AddressNo", employee.AddressNo);
+            var streetParam = new SqlParameter("@Street", employee.Street);
+            var cityParam = new SqlParameter("@City", employee.City);
+            var jobRoleParam = new SqlParameter("@JobRole", employee.JobRole);
 
-            var employeeIdParam = new SqlParameter("@EmployeeId", SqlDbType.Int);
-            employeeIdParam.Direction = ParameterDirection.Output;
 
-            _context.Database.ExecuteSqlRaw($"AddEmployee {employee.Fullname},{employee.AddressNo},{employee.Street},{employee.City},{employee.JobRole}, @EmployeeId OUTPUT", employeeIdParam);
-
-            int employeeId = (int)employeeIdParam.Value;
-
-            return _context.Employee.Find(employeeId);
+            _context.Database.ExecuteSqlRaw("AddEmployee @EmployeeId OUTPUT, @Fullname, @AddressNo, @Street, @City, @JobRole", employeeIdParam, fullnameParam, addressNoParam, streetParam, cityParam, jobRoleParam);
+            int addedEmployeeId = (int)employeeIdParam.Value;
+            return _context.Employee.Find(addedEmployeeId);
         }
 
         public void DeleteEmployee(Models.Employee employee)
         {
             var employeeIdParam = new SqlParameter("@EmployeeId", employee.Id);
-
             _context.Database.ExecuteSqlRaw("DeleteEmployee @EmployeeId", employeeIdParam);
         }
 
