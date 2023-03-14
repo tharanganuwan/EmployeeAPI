@@ -1,4 +1,5 @@
 using AutoMapper;
+using EmployeeAPI.Helpers;
 using EmployeeAPI.Services.Employee;
 using EmployeeAPI.Services.Employees;
 using Microsoft.AspNetCore.Builder;
@@ -9,10 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EmployeeAPI
@@ -29,6 +32,24 @@ namespace EmployeeAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            ////////////////////////////////
+            services.AddAuthentication("JwtAuth")
+                .AddJwtBearer("JwtAuth", options => {
+
+                    var keyBytes = Encoding.UTF8.GetBytes(Constants.Secret);
+                    var key = new SymmetricSecurityKey(keyBytes);
+
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Constants.Issure,
+                        ValidAudience = Constants.Audience,
+                        IssuerSigningKey = key
+                    };
+                });
+
+            //////////////////////////////////
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -55,6 +76,7 @@ namespace EmployeeAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
